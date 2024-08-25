@@ -1,56 +1,64 @@
-const express = require("express");
+const express = require('express');
+const cors = require('cors'); // Import the CORS middleware
 const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Use CORS middleware
+app.use(cors());
+
+// Use JSON middleware
 app.use(express.json());
 
-// Constants
-const user_id = "your_full_name_ddmmyyyy";
-const email = "your_email@college.com";
-const roll_number = "your_roll_number";
+const corsOptions = {
+    origin: 'http://localhost:8001',  // Replace with your frontend's URL
+    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
+  };
 
-// POST endpoint
-app.post("/bfhl", (req, res) => {
-  console.log("Received request body:", req.body);
+app.use(cors(corsOptions));
 
-  const { data } = req.body;
 
-  // Validate that 'data' is an array
-  if (!Array.isArray(data)) {
-    console.error("Invalid input format, data should be an array.");
-    return res.status(400).json({
-      is_success: false,
-      message: "Invalid input format, data should be an array.",
+app.post('/bfhl', (req, res) => {
+    const { data } = req.body;
+    const user_id = "SARVESH KADAM_29112003";  // Update with your full name and DOB
+    const email = "sarveshdadasaheb.kadam2021@vitstudent.ac.in";
+    const roll_number = "21BCE1183";
+
+    if (!Array.isArray(data)) {
+        return res.status(400).json({ is_success: false, message: "Invalid input format" });
+    }
+
+    let numbers = [];
+    let alphabets = [];
+    let highestLowercase = null;
+
+    data.forEach(item => {
+        if (!isNaN(item)) {
+            numbers.push(item);
+        } else if (/[a-zA-Z]/.test(item)) {
+            alphabets.push(item);
+            if (/[a-z]/.test(item)) {
+                if (!highestLowercase || item > highestLowercase) {
+                    highestLowercase = item;
+                }
+            }
+        }
     });
-  }
 
-  // Process data
-  const numbers = data.filter((item) => !isNaN(item));
-  const alphabets = data.filter((item) => isNaN(item));
-  const lowercaseAlphabets = alphabets.filter(
-    (char) => char === char.toLowerCase() && char.match(/[a-z]/)
-  );
-
-  const highestLowercaseAlphabet =
-    lowercaseAlphabets.length > 0
-      ? [lowercaseAlphabets.sort().reverse()[0]]
-      : [];
-
-  // Respond with processed data
-  res.json({
-    is_success: true,
-    user_id,
-    email,
-    roll_number,
-    numbers,
-    alphabets,
-    highest_lowercase_alphabet: highestLowercaseAlphabet,
-  });
+    res.json({
+        is_success: true,
+        user_id,
+        email,
+        roll_number,
+        numbers,
+        alphabets,
+        highest_lowercase_alphabet: highestLowercase ? [highestLowercase] : []
+    });
 });
 
-// GET endpoint
-app.get("/bfhl", (req, res) => {
-  res.json({ operation_code: 1 });
+// GET /bfhl endpoint
+app.get('/bfhl', (req, res) => {
+    res.json({ operation_code: 1 });
 });
 
 // Start the server
-const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
