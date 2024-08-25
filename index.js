@@ -3,14 +3,12 @@ const cors = require('cors'); // Import the CORS middleware
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Use CORS middleware
-app.use(cors());
 
 // Use JSON middleware
 app.use(express.json());
 
 const corsOptions = {
-    origin: 'http://localhost:8001',  // Replace with your frontend's URL
+    origin: 'https://bfhl-frontend-tan.vercel.app/',  // Replace with your frontend's URL
     optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
   };
 
